@@ -2,5 +2,3 @@
 Adds a condition number with an optional time in seconds on a specific target
 
 AlliedModders Post: https://forums.alliedmods.net/showthread.php?p=2713306
-
-Plugin Support: https://discord.gg/HUaRVSq4BE
