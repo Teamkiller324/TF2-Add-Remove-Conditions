@@ -18,6 +18,17 @@
 		"en"	"User found matching search criteria \"{1}\" is invalid. (Must be alive and connected)"
 	}
 	
+	"Target Does Not Have Condition"
+	{
+		"#format"	"{1:s},{2:i},{3:s}"
+		"en"	"Target {1} doesn't have the condition {2} ({3}) you specified"
+	}
+	"Target Already Has Condition"
+	{
+		"#format"	"{1:s},{2:i},{3:s}"
+		"en"	"Target {1} already has the condition {2} ({3}) you specified"
+	}
+	
 	"Condition ID Less Than 0"
 	{
 		"en"	"The condition id must be 0 or greater."
@@ -53,12 +64,12 @@
 	}
 	"Addcond Give Condition 3"
 	{
-		"#format"	"{1:i},{2:s},{3:s},{4:i}"
+		"#format"	"{1:i},{2:s},{3:s},{4:s}"
 		"en"	"Gave condition id {1} ({2}) to {3} for {4} seconds."
 	}
 	"Addcond Give Condtion 4"
 	{
-		"#format"	"{1:N},{2:i},{3:s},{4:s},{5:i}"
+		"#format"	"{1:N},{2:i},{3:s},{4:s},{5:s}"
 		"en"	"{1} has given the condition id {2} ({3}) to {4} for {5} seconds."
 	}
 	

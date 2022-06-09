@@ -4,7 +4,7 @@
 #define _tklib_only_tf2
 #include <tklib>
 #include <multicolors>
-#define PLUGIN_VERSION "2.3.0"
+#define PLUGIN_VERSION "2.3.1"
 #define Tag "{purple}[TF Addcond]{default}"
 ConVar addcond_chat;
 
@@ -38,6 +38,8 @@ public void OnPluginStart()	{
 	CreateConVar("tf_addcond_version", PLUGIN_VERSION, "[TF2] Add/Remove Condition Version");
 	
 	AutoExecConfig(true, "tf_addcond");
+	
+	Tklib_PrepareTFCondName();
 }
 
 Action condition_add(int client, int args) {
@@ -51,15 +53,14 @@ Action condition_add(int client, int args) {
 		return Plugin_Handled;
 	}
 	
-	char arg1[64], arg2[64], arg3[64], target_name[64], description[192];
+	char arg1[64], arg2[64], arg3[64], target_name[64];
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
 	GetCmdArg(3, arg3, sizeof(arg3));
 	
-	ArrayList list = FindClientsByPlayername(arg1);
-	int value = StringToInt(arg2);
+	ArrayList list = FindClientsByPlayername(arg1, client);
+	int value = StringToAny(arg2);
 	float time = StringToFloat(arg3);
-	TF2_GetConditionString(value, description, sizeof(description));
 	
 	if(list.Length < 1) {
 		delete list;
@@ -81,46 +82,52 @@ Action condition_add(int client, int args) {
 		return Plugin_Handled;
 	}
 	
-	GetClientNameTeamString(target, target_name, sizeof(target_name));
-	
 	if(value < 0) {
 		CPrintToChat(client, "%s %t", Tag, "Condition ID Less than 0");
 		return Plugin_Handled;
 	}
+	
+	if(TF2_IsPlayerInCondition(target, view_as<TFCond>(value))) {
+		CPrintToChat(client, "%s %t", Tag, "Target Already Have Condition", value, TFCond_Name[value]);
+		return Plugin_Handled;
+	}
+	
 	if(value > MAX_TF2_CONDITION_ID) {
 		CPrintToChat(client, "%s %t", Tag, "Condition ID Invalid", value);
 		return Plugin_Handled;
 	}
 	
-	switch(IsValidString(arg3)) {
+	GetClientNameTeamString(target, target_name, sizeof(target_name));
+	
+	switch(!IsValidString(arg3)) {
 		case true: {
-			if(time < 1) {
-				CPrintToChat(client, "%s The time must be greater than 0 seconds", Tag);
-				return Plugin_Handled;
-			}
-			if(time > 5000) {
-				CPrintToChat(client, "%s You may apply without time specification for infinite time", Tag);
-				return Plugin_Handled;
-			}
-			
 			TF2_AddCondition(target, view_as<TFCond>(value), TFCondDuration_Infinite, 0);
 			
 			switch(addcond_chat.BoolValue) {
-				case 1: CPrintToChat(client, "%s %t", Tag, "Addcond Give Condition 1", value, description, target_name);
-				case 2: CPrintToChatAll("%s %t", Tag, "Addcond Give Condition 2", client, value, description, target_name);
+				case 1: CPrintToChat(client, "%s %t", Tag, "Addcond Give Condition 1", value, TFCond_Name[value], target_name);
+				case 2: CPrintToChatAll("%s %t", Tag, "Addcond Give Condition 2", client, value, TFCond_Name[value], target_name);
 			}
 			
-			CPrintToServer("Log: %N Added condition %d (%s) to %s.", client, value, description, target_name);
+			CPrintToServer("Log: %N Added condition %d (%s) to %s.", client, value, TFCond_Name[value], target_name);
 		}
 		case false: {
+			if(time < 1) {
+				CPrintToChat(client, "%s %t", Tag, "Time Less Than 1");
+				return Plugin_Handled;
+			}
+			if(time > 5000) {
+				CPrintToChat(client, "%s %t", Tag, "Timer More Than 5000");
+				return Plugin_Handled;
+			}
+			
 			TF2_AddCondition(target, view_as<TFCond>(value), time, 0);
 			
 			switch(addcond_chat.BoolValue) {
-				case 1: CPrintToChat(client, "%s %t", Tag, "Addcond Give Condition 3", value, description, target_name, time);
-				case 2: CPrintToChatAll("%s %t", Tag, "Addcond Give Condition 4", client, value, description, target_name, time);
+				case 1: CPrintToChat(client, "%s %t", Tag, "Addcond Give Condition 3", value, TFCond_Name[value], target_name, arg3);
+				case 2: CPrintToChatAll("%s %t", Tag, "Addcond Give Condition 4", client, value, TFCond_Name[value], target_name, arg3);
 			}
 			
-			CPrintToServer("Log: %N Added condition %d (%s) to %s for %d seconds.", client, value, description, target_name, time);
+			CPrintToServer("Log: %N Added condition id %d (%s) to %s for %d seconds.", client, value, TFCond_Name[value], target_name, arg3);
 		}
 	}
 	
@@ -138,13 +145,12 @@ Action condition_remove(int client, int args) {
 		return Plugin_Handled;
 	}
 	
-	char arg1[64], arg2[64], target_name[64], description[256];
+	char arg1[64], arg2[64], target_name[64];
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
 	
-	ArrayList list = FindClientsByPlayername(arg1);
-	int value = StringToInt(arg2);
-	TF2_GetConditionString(value, description, sizeof(description));
+	ArrayList list = FindClientsByPlayername(arg1, client);
+	int value = StringToAny(arg2);
 	
 	if(list.Length < 1) {
 		delete list;
@@ -177,17 +183,17 @@ Action condition_remove(int client, int args) {
 	}
 	
 	if(!TF2_IsPlayerInCondition(target, view_as<TFCond>(value))) {
-		CPrintToChat(client, "%s The target %s does not have the condition you specified", Tag);
+		CPrintToChat(client, "%s %t", Tag, "Target Does Not Have Condition", target_name, value, TFCond_Name[value]);
 		return Plugin_Handled;
 	}
 	
 	TF2_RemoveCondition(target, view_as<TFCond>(value));		
 	
 	switch(addcond_chat.BoolValue) {
-		case 1:	CPrintToChat(client, "%s %t", Tag, "Removecond Remove Condition 1", value, value, description, target_name);
-		case 2:	CPrintToChatAll("%s %t", Tag, "Removecond Remove Condition 2", client, value, description, target_name);
+		case 1:	CPrintToChat(client, "%s %t", Tag, "Removecond Remove Condition 1", value, TFCond_Name[value], target_name);
+		case 2:	CPrintToChatAll("%s %t", Tag, "Removecond Remove Condition 2", client, value, TFCond_Name[value], target_name);
 	}
 	
-	CPrintToServer("Log: %N Removed condition %d (%s) from %s", client, value, description, target_name);
+	CPrintToServer("Log: %N Removed condition id %d (%s) from %s", client, value, TFCond_Name[value], target_name);
 	return Plugin_Handled;
 }
