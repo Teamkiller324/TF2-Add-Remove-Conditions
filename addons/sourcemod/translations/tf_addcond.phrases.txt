@@ -1,0 +1,79 @@
+"Phrases"
+{
+	"No User Found"
+	{
+		"#format"	"{1:s}"
+		"en"	"No user was found matching search criteria \"{1}\""
+	}
+	
+	"More Than One Matching Search Criteria"
+	{
+		"#format"	"{1:s}"
+		"en"	"More than one user was found matching search criteria \"{1}\""
+	}
+	
+	"Invalid Target"
+	{
+		"#format"	"{1:s}"
+		"en"	"User found matching search criteria \"{1}\" is invalid. (Must be alive and connected)"
+	}
+	
+	"Condition ID Less Than 0"
+	{
+		"en"	"The condition id must be 0 or greater."
+	}
+	"Condition Id Invalid"
+	{
+		"#format"	"{1:i}"
+		"en"	"The condition id {1} you specified seems to not exist, giving no effect."
+	}
+	
+	"Time Less Than 1"
+	{
+		"en"	"The time must be greater than 0 seconds."
+	}
+	"Timer More Than 5000"
+	{
+		"en"	"You may apply without time specification for infinite time."
+	}
+
+	"Addcond Usage"
+	{
+		"en"	"Usage: sm_addcond <target name> <condition id> (optionally <time/seconds>)"
+	}
+	"Addcond Give Condition 1"
+	{
+		"#format"	"{1:i},{2:s},{3:s}"
+		"en"	"Gave condition id {1} ({2}) to {3}."
+	}
+	"Addcond Give Condition 2"
+	{
+		"#format"	"{1:N},{2:i},{3:s},{4:s}"
+		"en"	"{1} has given the condition id {2} ({3}) to {4}."
+	}
+	"Addcond Give Condition 3"
+	{
+		"#format"	"{1:i},{2:s},{3:s},{4:i}"
+		"en"	"Gave condition id {1} ({2}) to {3} for {4} seconds."
+	}
+	"Addcond Give Condtion 4"
+	{
+		"#format"	"{1:N},{2:i},{3:s},{4:s},{5:i}"
+		"en"	"{1} has given the condition id {2} ({3}) to {4} for {5} seconds."
+	}
+	
+	"Removecond Usage"
+	{
+		"en"	"Usage: sm_removecond <target name> <condition id>"
+	}
+	"Removecond Remove Condition 1"
+	{
+		"#format"	"{1:i},{2:s},{3:s}"
+		"en"	"Removed the condition id {1} ({2}) from {3}"
+	}
+	"Removecond Remove Condition 2"
+	{
+		"#format"	"{1:N},{2:i},{3:s},{4:s}"
+		"en"	"{1} Has removed the condition id {2} ({3}) from {4}"
+	}
+}
